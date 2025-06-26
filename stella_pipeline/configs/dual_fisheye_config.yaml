@@ -1,0 +1,48 @@
+# Dual fisheye configuration for your camera
+# Based on your video resolution: 1440x720 (dual fisheye side by side)
+
+Camera:
+  name: "Dual Fisheye Camera"
+  setup: "monocular"  # Treat as single wide camera
+  model: "fisheye"
+  
+  # These parameters need to be calibrated for your specific camera
+  # Starting values based on your 1440x720 resolution
+  fx: 360.0  # Focal length in pixels (roughly width/4)
+  fy: 360.0  # Focal length in pixels (roughly height/2)
+  cx: 360.0  # Principal point X (center of left fisheye: width/4)
+  cy: 360.0  # Principal point Y (center of fisheye: height/2)
+
+  # Fisheye distortion parameters (these need calibration)
+  k1: -0.03
+  k2: -0.003
+  k3: -0.003
+  k4: -0.0006
+
+  fps: 30.0
+  cols: 1440  # Your video width
+  rows: 720   # Your video height
+
+  color_order: "RGB"
+
+Preprocessing:
+  min_size: 800
+
+Feature:
+  name: "ORB feature extraction for fisheye"
+  scale_factor: 1.2
+  num_levels: 8
+  ini_fast_threshold: 20
+  min_fast_threshold: 7
+
+Initializer:
+  scaling_factor: 5.0
+
+Mapping:
+  baseline_dist_thr_ratio: 0.02
+  redundant_obs_ratio_thr: 0.9
+  num_covisibilities_for_landmark_generation: 20
+  num_covisibilities_for_landmark_fusion: 20
+
+System:
+  map_format: "msgpack" 

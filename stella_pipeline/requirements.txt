@@ -1,0 +1,14 @@
+numpy
+opencv-python
+scipy
+natsort
+matplotlib
+msgpack
+torch
+torchvision
+yacs
+gdown
+imageio
+scikit-learn
+shapely
+scikit-image

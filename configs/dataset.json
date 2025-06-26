@@ -1,0 +1,57 @@
+{
+    "images": [
+        "s3://preimage-data-external-dev/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(3rd_copy).mp4",
+        "s3://preimage-data-external-dev/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed).mp4",
+        "s3://preimage-data-external-dev/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(4th_copy).mp4",
+        "s3://preimage-data-external-dev/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(copy).mp4",
+        "s3://preimage-data-external-dev/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(another_copy).mp4"
+    ],
+    "num_images": 5,
+    "gcps": [],
+    "num_gcps": 0,
+    "checkpoints": [],
+    "num_checkpoints": 0,
+    "is_checkpoint": false,
+    "is_gcp": false,
+    "created_at": "2024-07-12T09:32:29.188Z",
+    "project_name": "tower-x245",
+    "input_id": "8aeaf355-1d3b-42f0-bb7a-18965ce49e39",
+    "outputs_selected": [
+        {
+            "id": "e6b58d59-78e8-4a08-b613-7839ec3ef9d7",
+            "type": "VIRTUALTOUR",
+            "metadata": null,
+            "s3Path": null
+        },
+        {
+            "id": "e6b58d59-78e8-4a08-b613-7839ec3ef9d7",
+            "type": "POINTCLOUD",
+            "metadata": null,
+            "s3Path": null
+        },
+        {
+            "id": "b30f9120-cde8-4a3d-9e75-ea82b3e5464e",
+            "type": "HIGHACCURACYPOINTCLOUD",
+            "metadata": null,
+            "s3Path": null
+        },
+        {
+            "id": "840cf9ec-f3b9-42c0-ad5a-605938b2e170",
+            "type": "SEGMENTATIONQUANTITIES",
+            "metadata": null,
+            "s3Path": null
+        },
+        {
+            "id": "04eab438-8582-40a2-b165-3270122765d7",
+            "type": "SCHEMATICFLOORPLAN",
+            "metadata": null,
+            "s3Path": null
+        },
+        {
+            "id": "320db704-205e-4660-83bf-4ab7ede51bf9",
+            "type": "CAD",
+            "metadata": null,
+            "s3Path": null
+        }
+    ]
+}

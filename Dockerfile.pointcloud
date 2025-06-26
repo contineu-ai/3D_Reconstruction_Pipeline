@@ -1,0 +1,246 @@
+FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+
+# install dependencies via apt
+ENV DEBCONF_NOWARNINGS=yes
+RUN set -x && \
+  apt-get update -y -qq && \
+  apt-get upgrade -y -qq --no-install-recommends && \
+  : "basic dependencies" && \
+  apt-get install -y -qq \
+    build-essential \
+    pkg-config \
+    cmake \
+    git \
+    wget \
+    curl \
+    tar \
+    unzip \
+    jq \
+    ninja-build && \
+  : "g2o dependencies" && \
+  apt-get install -y -qq \
+    libatlas-base-dev \
+    libsuitesparse-dev \
+    libglew-dev && \
+  : "OpenCV dependencies" && \
+  apt-get install -y -qq \
+    libjpeg-dev \
+    libpng++-dev \
+    libtiff-dev \
+    libopenexr-dev \
+    libwebp-dev \
+    ffmpeg \
+    python3 \
+    python3-pip \
+    python3-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libavutil-dev \
+    libswscale-dev \
+    libtbb-dev && \
+  : "backward-cpp dependencies" && \
+  apt install -y -qq binutils-dev && \
+  : "other dependencies" && \
+  apt-get install -y -qq \
+    libyaml-cpp-dev \
+    sqlite3 \
+    libsqlite3-dev \
+    libgflags-dev \
+    libgoogle-glog-dev \
+    libboost-all-dev && \
+  : "Agisoft/Bundle Adjustment dependencies" && \
+  apt-get install -y -qq \
+    python3-opencv \
+    libgeos-dev \
+    libproj-dev \
+    libgdal-dev \
+    libceres-dev \
+    libeigen3-dev \
+    libfreeimage-dev \
+    libmetis-dev \
+    libgmp-dev \
+    libmpfr-dev \
+    libcgal-dev && \
+  : "remove cache" && \
+  apt-get autoremove -y -qq && \
+  rm -rf /var/lib/apt/lists/*
+
+ARG CMAKE_INSTALL_PREFIX=/usr/local
+ARG NUM_THREADS=4
+
+ENV CPATH=${CMAKE_INSTALL_PREFIX}/include:${CPATH}
+ENV C_INCLUDE_PATH=${CMAKE_INSTALL_PREFIX}/include:${C_INCLUDE_PATH}
+ENV CPLUS_INCLUDE_PATH=${CMAKE_INSTALL_PREFIX}/include:${CPLUS_INCLUDE_PATH}
+ENV LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${LD_LIBRARY_PATH}
+
+# Eigen
+ARG EIGEN3_VERSION=3.3.7
+WORKDIR /tmp
+RUN set -x && \
+  wget -q https://gitlab.com/libeigen/eigen/-/archive/${EIGEN3_VERSION}/eigen-${EIGEN3_VERSION}.tar.bz2 && \
+  tar xf eigen-${EIGEN3_VERSION}.tar.bz2 && \
+  rm -rf eigen-${EIGEN3_VERSION}.tar.bz2 && \
+  cd eigen-${EIGEN3_VERSION} && \
+  mkdir -p build && \
+  cd build && \
+  cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
+    .. && \
+  make -j${NUM_THREADS} && \
+  make install && \
+  cd /tmp && \
+  rm -rf *
+ENV Eigen3_DIR=${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake
+
+# Install g2o
+WORKDIR /tmp
+RUN set -x && \
+  git clone https://github.com/RainerKuemmerle/g2o.git && \
+  cd g2o && \
+  mkdir -p build && \
+  cd build && \
+  cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_UNITTESTS=OFF \
+    -DG2O_USE_CHOLMOD=OFF \
+    -DG2O_USE_CSPARSE=ON \
+    -DG2O_USE_OPENGL=OFF \
+    -DG2O_USE_OPENMP=ON \
+    -DG2O_BUILD_APPS=OFF \
+    -DG2O_BUILD_EXAMPLES=OFF \
+    -DG2O_BUILD_LINKED_APPS=OFF \
+    .. && \
+  make -j${NUM_THREADS} && \
+  make install && \
+  cd /tmp && \
+  rm -rf *
+
+# OpenCV
+ARG OPENCV_VERSION=4.7.0
+WORKDIR /tmp
+RUN set -x && \
+  wget -q https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip && \
+  unzip -q ${OPENCV_VERSION}.zip && \
+  rm -rf ${OPENCV_VERSION}.zip && \
+  cd opencv-${OPENCV_VERSION} && \
+  mkdir -p build && \
+  cd build && \
+  cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
+    -DBUILD_DOCS=OFF \
+    -DBUILD_EXAMPLES=OFF \
+    -DBUILD_JASPER=OFF \
+    -DBUILD_OPENEXR=OFF \
+    -DBUILD_PERF_TESTS=OFF \
+    -DBUILD_TESTS=OFF \
+    -DBUILD_PROTOBUF=OFF \
+    -DBUILD_opencv_apps=OFF \
+    -DBUILD_opencv_dnn=OFF \
+    -DBUILD_opencv_ml=OFF \
+    -DBUILD_opencv_python_bindings_generator=OFF \
+    -DENABLE_CXX11=ON \
+    -DENABLE_FAST_MATH=ON \
+    -DWITH_EIGEN=ON \
+    -DWITH_FFMPEG=ON \
+    -DWITH_TBB=ON \
+    -DWITH_OPENMP=ON \
+    .. && \
+  make -j${NUM_THREADS} && \
+  make install && \
+  cd /tmp && \
+  rm -rf *
+ENV OpenCV_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/opencv4
+
+# COLMAP not needed - using Agisoft Metashape instead
+
+# Install NumPy 1.x first (BEFORE building OpenCV)
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install "numpy<2.0"
+
+# Install remaining Python packages (AFTER OpenCV is built with correct NumPy)
+# Pin numpy<2.0 in all installations to prevent upgrades
+RUN python3 -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu && \
+    python3 -m pip install \
+    "numpy<2.0" \
+    scikit-learn scipy matplotlib \
+    gpxpy pandas geopy tqdm msgpack \
+    open3d scikit-image pillow \
+    pyproj geopandas shapely \
+    h5py kornia \
+    seaborn plotly
+
+# Install Metashape (Agisoft) - same as main Dockerfile
+COPY ./agility_360/Metashape-2.1.0-cp37.cp38.cp39.cp310.cp311-abi3-linux_x86_64.whl /tmp/
+RUN python3 -m pip install /tmp/Metashape-2.1.0-cp37.cp38.cp39.cp310.cp311-abi3-linux_x86_64.whl && \
+    python3 -m pip install "numpy<2.0" && \
+    rm /tmp/Metashape-2.1.0-cp37.cp38.cp39.cp310.cp311-abi3-linux_x86_64.whl
+
+# Setup Agisoft for trial mode (no license file - uses 30-day trial)
+# Trial mode will activate automatically when Metashape starts
+RUN mkdir -p /var/tmp/agisoft/licensing/licenses/ && \
+    mkdir -p /root/.agisoft_licenses
+
+# Final verification that NumPy is < 2.0
+RUN python3 -c "import numpy; print(f'NumPy version: {numpy.__version__}'); assert numpy.__version__.startswith('1.'), f'NumPy version should be 1.x, got {numpy.__version__}'"
+
+RUN mkdir -p /workspace
+
+# Build and install stella_vslam
+WORKDIR /workspace
+COPY ./stella_pipeline/stella_vslam /workspace/stella_vslam
+WORKDIR /workspace/stella_vslam
+RUN set -x && \
+  mkdir -p build && \
+  cd build && \
+  cmake \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
+    .. && \
+  make -j${NUM_THREADS} && \
+  make install && \
+  rm -rf CMakeCache.txt CMakeFiles Makefile cmake_install.cmake
+
+# Build stella_vslam_examples (separate repository)
+WORKDIR /workspace
+COPY ./stella_pipeline/stella_vslam_examples /workspace/stella_vslam_examples
+WORKDIR /workspace/stella_vslam_examples
+RUN set -x && \
+  git submodule update --init --recursive && \
+  mkdir -p build && \
+  cd build && \
+  cmake \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
+    .. && \
+  make -j${NUM_THREADS} && \
+  mkdir -p /workspace/stella_pipeline/stella_vslam_examples/build && \
+  cp run_video_slam /workspace/stella_pipeline/stella_vslam_examples/build/ && \
+  cp run_image_slam /workspace/stella_pipeline/stella_vslam_examples/build/ 2>/dev/null || true
+
+# Copy necessary files
+COPY ./stella_pipeline/orb_vocab.fbow /workspace/stella_pipeline/
+COPY ./stella_pipeline/configs/ /workspace/stella_pipeline/configs/
+COPY ./configs/ /workspace/configs/
+
+# Copy pipeline scripts
+COPY ./scripts/ /workspace/scripts/
+COPY ./agility_360/ /workspace/agility_360/
+
+# Copy and make scripts executable  
+COPY ./run_pointcloud_pipeline_docker.sh /workspace/
+RUN chmod +x /workspace/run_pointcloud_pipeline_docker.sh
+
+# Create directories for processing
+RUN mkdir -p /workspace/sharp_out && \
+    mkdir -p /workspace/agi_out && \
+    mkdir -p /workspace/hloc_out
+
+WORKDIR /workspace
+
+CMD ["/bin/bash"] 

@@ -1,0 +1,19 @@
+{
+  "gcp_unc_alt": 0.01,
+  "gcp_unc_lat": 0.005,
+  "gcp_unc_lon": 0.005,
+  "gps_unc_alt": 3.0,
+  "gps_unc_lat": 1.0,
+  "gps_unc_lon": 1.0,
+  "sfm_quality": 1,
+  "dataset_type": 2,
+  "showcase": 0,
+  "segmentation": 1,
+  "bim": 0,
+  "bim_obj": 0,
+  "is_360": 0,
+  "poisson": 1,
+  "report": 0,
+  "debug": 0,
+  "gps": 0
+}
