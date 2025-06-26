@@ -228,9 +228,6 @@ def align_cameras(images_dir, vidcount, output_dir, metric_depths, seg, gps, use
         # MAXIMUM FEATURE MATCHING - No limits, no masking, maximum keypoints
         print("INFO: Feature matching with UNLIMITED keypoints for maximum alignment...")
         
-        # Suppress verbose Metashape keypoint detection logs
-        Metashape.Application().console.verbosity = 6  # Reduce verbosity during matching
-        
         chunk.matchPhotos(
             downscale=1,  # Full resolution for maximum feature detection
             generic_preselection=True,  
@@ -242,9 +239,6 @@ def align_cameras(images_dir, vidcount, output_dir, metric_depths, seg, gps, use
             keypoint_limit=0,  # UNLIMITED keypoints per image (removes 2000 limit)
             tiepoint_limit=0   # UNLIMITED tie points per image
         )
-        
-        # Restore normal verbosity
-        Metashape.Application().console.verbosity = 10
 
         new_cams = []
         old_cams = []
