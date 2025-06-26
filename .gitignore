@@ -1,4 +1,9 @@
-# Python
+# Build artifacts and logs
+*.log
+build.log
+docker_build.log
+
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
@@ -28,24 +33,6 @@ ENV/
 # Docker
 .dockerignore
 
-# Personal license files (users should add their own)
-personal-agisoft.lic
-*.lic
-
-# Output directories
-outputs/
-SLAM_outputs/
-*_slam/
-*_sharp/
-agi_out/
-msg_extraction/
-
-# Temporary files
-*.tmp
-*.temp
-temp/
-tmp/
-
 # IDE files
 .vscode/
 .idea/
@@ -57,33 +44,56 @@ tmp/
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-logs/
+# Output directories (users will create their own)
+outputs/
+test_outputs/
+*_outputs/
 
-# Large model files (download separately)
-*.ckpt
-*.pth
-*.pt
-*.weights
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
 
-# Data files (too large for git)
+# License files (users should add their own)
+# personal-agisoft.lic
+
+# Large binary files that might be added accidentally
 *.mp4
 *.avi
 *.mov
-*.mkv
-*.msg
+*.insv
 *.ply
 *.pcd
-*.xyz
-
-# Visualization outputs
-*.png
-*.jpg
-*.jpeg
 
 # Compiled binaries
-stella_vslam_examples/build/
-**/build/
-**/cmake_build_debug/
-**/cmake_build_release/ 
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Git
+.git/
+
+# Node modules (if any)
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Personal license files (users should add their own)
+# *.lic
+
+# Output directories
+SLAM_outputs/
+*_slam/
+*_sharp/
+agi_out/
+msg_extraction/ 

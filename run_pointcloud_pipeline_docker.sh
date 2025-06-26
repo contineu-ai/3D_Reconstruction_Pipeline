@@ -3,10 +3,10 @@ set -e
 
 # LICENSE MOUNTING: To mount Agisoft license, use this Docker run command:
 # docker run --gpus all --rm -it \
-#     -v /home/raghav/workspace/SLAM_data:/data \
-#     -v /home/raghav/workspace/SLAM_outputs:/outputs \
-#     -v /home/raghav/workspace/Pipeline/pipeline/virtual-tour/personal-agisoft.lic:/root/.agisoft_licenses/metashape.lic \
-#     pointcloud-optimized:latest /workspace/run_pointcloud_pipeline_docker.sh /data/test5.mp4 /outputs
+#     -v /path/to/your/data:/data \
+#     -v /path/to/your/outputs:/outputs \
+#     -v $(pwd)/personal-agisoft.lic:/root/.agisoft_licenses/metashape.lic:ro \
+#     pointcloud-optimized:latest /workspace/run_pointcloud_pipeline_docker.sh /data/your_video.mp4 /outputs
 
 VideoDirectoryPath=$1
 OutputDirectory=$2

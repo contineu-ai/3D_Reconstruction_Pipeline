@@ -211,7 +211,6 @@ WORKDIR /workspace
 COPY ./stella_pipeline/stella_vslam_examples /workspace/stella_vslam_examples
 WORKDIR /workspace/stella_vslam_examples
 RUN set -x && \
-  git submodule update --init --recursive && \
   mkdir -p build && \
   cd build && \
   cmake \
