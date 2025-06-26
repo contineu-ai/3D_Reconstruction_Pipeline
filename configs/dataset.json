@@ -1,10 +1,10 @@
 {
     "images": [
-        "s3://preimage-data-external-dev/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(3rd_copy).mp4",
-        "s3://preimage-data-external-dev/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed).mp4",
-        "s3://preimage-data-external-dev/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(4th_copy).mp4",
-        "s3://preimage-data-external-dev/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(copy).mp4",
-        "s3://preimage-data-external-dev/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(another_copy).mp4"
+        "s3://your-data-bucket/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(3rd_copy).mp4",
+        "s3://your-data-bucket/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed).mp4",
+        "s3://your-data-bucket/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(4th_copy).mp4",
+        "s3://your-data-bucket/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(copy).mp4",
+        "s3://your-data-bucket/539c88ed-dd9f-41e7-b553-365082f37352/workdir/videos/ethan_test_video_(trimmed)_(another_copy).mp4"
     ],
     "num_images": 5,
     "gcps": [],
