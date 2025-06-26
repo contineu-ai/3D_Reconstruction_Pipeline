@@ -1,12 +1,21 @@
 # Pointcloud Pipeline
 
-A complete Docker-based pipeline for processing 360° videos into point clouds using SLAM and photogrammetry.
+A complete Docker-based pipeline for processing 360° videos into point clouds using SLAM and photogrammetry. THIS README WAS WRITTEN BY CHATGPT SO PLS DON'T JUDGE ME, SLACK MSSG ME (RAGHAV) IF ANY BUILD ISSUES.
 
 ## Features
 
 - **SLAM Processing**: Extract camera poses and sparse point clouds from 360° videos using Stella VSLAM
 - **Bundle Adjustment**: Refine camera positions using Agisoft Metashape
 - **Multiple Input Formats**: Supports .mp4 and .insv video files
+- **Self-Contained**: Everything needed is included in this repository
+
+## Prerequisites
+
+- **Docker** with GPU support (nvidia-docker)
+- **NVIDIA GPU** with CUDA support
+- **Linux** (tested on Ubuntu 22.04)
+- **~10GB free disk space** (for Docker build)
+- **~10-15 minutes** for first-time Docker build
 
 ## Quick Start
 
@@ -28,8 +37,11 @@ A complete Docker-based pipeline for processing 360° videos into point clouds u
    ./run.sh /path/to/video/directory /path/to/output/directory
    ```
 
-That's it! The script will automatically:
-- Build the Docker image
+That's it! The `run.sh` script will automatically:
+- **Build the Docker image** (first time only, ~10-15 minutes)
+- **Mount your data** and output directories
+- **Mount the Agisoft license** (if present, otherwise uses 30-day trial)
+- **Run the full pipeline** inside Docker
 - Process your video(s) through SLAM
 - Perform bundle adjustment with Agisoft
 - Generate point clouds and camera poses
@@ -43,7 +55,22 @@ That's it! The script will automatically:
 ```
 
 **With Agisoft License:**
-If you have an Agisoft Metashape license, place it as `personal-agisoft.lic` in the repository root. Otherwise, the pipeline will use the 30-day trial.
+If you have an Agisoft Metashape license, place it as `personal-agisoft.lic` in the repository root. The `run.sh` script will automatically mount it into Docker. Otherwise, the pipeline will use the 30-day trial.
+
+**What happens behind the scenes:**
+The `run.sh` script handles all Docker complexity for you:
+- Builds the Docker image (if not already built)
+- Properly mounts your video files and output directory
+- Automatically mounts the license file (if present)
+- Runs the equivalent of this manual Docker command:
+  ```bash
+  docker run --gpus all --rm -it \
+      -v /your/data:/data \
+      -v /your/outputs:/outputs \
+      -v $(pwd)/personal-agisoft.lic:/root/.agisoft_licenses/metashape.lic:ro \
+      pointcloud-optimized:latest \
+      /workspace/run_pointcloud_pipeline_docker.sh /data/video.mp4 /outputs
+  ```
 
 ### Output Files
 
@@ -61,7 +88,9 @@ The pipeline generates:
 
 ### Manual Docker Commands
 
-If you prefer to run Docker commands manually:
+**Most users should use `./run.sh` instead** - it handles everything automatically!
+
+If you need to run Docker commands manually (for debugging or customization):
 
 ```bash
 # Build the image
@@ -105,28 +134,16 @@ The pipeline uses optimized settings for 360° video processing:
 - Ensure sufficient disk space (10GB+ for Docker build)
 - Check internet connectivity for dependency downloads
 
-## License
+**SLAM Issues:**
+- If SLAM binary is missing: The Docker build should create `/workspace/stella_pipeline/stella_vslam_examples/build/run_video_slam`
+- Check build logs for compilation errors with g2o or OpenCV dependencies
+- If `ghc/filesystem.hpp` errors occur: The `3rd/filesystem` submodule should be properly included
+- SLAM may fail on very blurry or low-texture videos - try with sharper footage
 
-This project includes:
-- Stella VSLAM (BSD License)
-- Agisoft Metashape (Commercial - requires license)
-- OpenCV (Apache 2.0)
+**Agisoft License Issues:**
+- Trial mode: Works for 30 days without license file
+- License mounting: Ensure `personal-agisoft.lic` is in the repository root
+- "No license found" error: Check file permissions and Docker mounting
 
-See individual component licenses for details.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test with sample data
-5. Submit a pull request
-
-## Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review Docker and GPU setup
-3. Open an issue with system details and error logs
 
 
